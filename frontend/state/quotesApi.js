@@ -22,17 +22,18 @@ export const quotesApi = createApi({
         }),
         deleteQuote: builder.mutation({
             query: id =>({
-                url:'quotes/:' + id,
-                method: 'DELETE',
-                body: {id}
+                url:'quotes/' + id,
+                method: 'DELETE'
             }),
+            invalidatesTags: ['Quotes'], 
         }),
         toggleFake: builder.mutation({
-            query: id =>({
-                url:'quotes/:' + id,
+            query: ({id, quote})=>({
+                url:'quotes/' + id,
                 method: 'PUT',
-                body: true
+                body: quote
             }),
+            invalidatesTags: ['Quotes'], 
         }),
 
     }),
