@@ -10,9 +10,9 @@ import { useGetQuotesQuery, useDeleteQuoteMutation, useToggleFakeMutation } from
 
 export default function Quotes() {
 
-  const {data: quotes}=useGetQuotesQuery()
-  const [deleteQuote]=useDeleteQuoteMutation()
-  const [toggleFake]=useToggleFakeMutation()
+  const {data: quotes, isLoading: gettingQuotes, isFetching: refreshingQuotes} = useGetQuotesQuery()
+  const [deleteQuote, {isLoading: deletingQuote}] = useDeleteQuoteMutation()
+  const [toggleFake, {isLoading: togglingQuote}] = useToggleFakeMutation()
 
 
   const onDeleteQuote = id => {
@@ -24,7 +24,11 @@ export default function Quotes() {
   const dispatch = useDispatch()
   return (
     <div id="quotes">
-      <h3>Quotes</h3>
+      <h3>
+        Quotes
+        {togglingQuote && ' being toggled...'}
+        {(gettingQuotes || refreshingQuotes || deletingQuote) && ' being loaded...'}
+      </h3>
       <div>
         {
           quotes?.filter(qt => {
@@ -44,10 +48,7 @@ export default function Quotes() {
                 </div>
               </div>
             ))
-        }
-        {
-          !quotes?.length && "No quotes here! Go write some."
-        }
+        }        
       </div>
       {!!quotes?.length && <button onClick={() => dispatch(toggleVisibility())}>
         {displayAllQuotes ? 'HIDE' : 'SHOW'} FAKE QUOTES

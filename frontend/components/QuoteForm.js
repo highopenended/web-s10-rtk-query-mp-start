@@ -24,9 +24,7 @@ const reducer = (state, action) => {
 
 export default function TodoForm() {
   const [state, dispatch] = useReducer(reducer, initialState)
-
-  const [createQuote] = useCreateQuoteMutation()
-
+  const [createQuote, {error: creationError, isLoading: creatingQuote}] = useCreateQuoteMutation()
 
   const onChange = ({ target: { name, value } }) => {
     dispatch({ type: CHANGE_INPUT, payload: { name, value } })
@@ -39,15 +37,29 @@ export default function TodoForm() {
 
     const newQuote = {authorName:state.authorName, quoteText:state.quoteText}
     createQuote(newQuote)
-
-    resetForm()
+    .unwrap()
+    .then(data => {
+      console.log(data)
+      resetForm()
+    })
+    .catch(err=>{
+      console.log(err)
+    })
   }
 
   return (
     <form id="quoteForm" onSubmit={onNewQuote}>
-      <h3>New Quote Form</h3>
+      <h3>
+        {
+          creationError
+          // ? creationError.data.message
+          ? "Quote text is too short..."
+          : creatingQuote ? "Creating New Quote..." : "New Quote Form"
+        }
+      </h3>
       <label><span>Author:</span>
         <input
+          disabled={creatingQuote}
           type='text'
           name='authorName'
           placeholder='type author name'
@@ -57,6 +69,7 @@ export default function TodoForm() {
       </label>
       <label><span>Quote text:</span>
         <textarea
+          disabled={creatingQuote}
           type='text'
           name='quoteText'
           placeholder='type quote'
